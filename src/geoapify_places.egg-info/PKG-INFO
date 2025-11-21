@@ -1,0 +1,80 @@
+Metadata-Version: 2.4
+Name: geoapify-places
+Version: 0.1.0
+Summary: Lightweight client for the Geoapify Places API.
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: requests>=2.31.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+
+Geoapify Places Connector
+=========================
+
+This repository contains a lightweight Python connector for the [Geoapify Places API](https://www.geoapify.com/places-api). It ships with environment-aware configuration helpers, an HTTP client that wraps the `/v2/places` endpoint, normalized business models, pytest coverage, and an executable example script.
+
+Repository layout
+-----------------
+
+- `src/geoapify_places/config.py` – loads the API key and base URL, optionally parsing a `.env` file.
+- `src/geoapify_places/client.py` – wraps HTTP calls, handles auth, validation, and error reporting.
+- `src/geoapify_places/models.py` – dataclasses + helpers to normalize business records.
+- `examples/query_places.py` – runnable sample that fetches and prints nearby results.
+- `tests/` – pytest coverage for the parser and client behavior.
+- `.env.example` – template showing how to store `GEOAPIFY_API_KEY` locally (copy it to `.env`).
+
+Setup
+-----
+
+1. Create your virtual environment (optional but recommended) and install dependencies:
+
+   ```bash
+   pip install -r requirements-dev.txt
+   ```
+
+2. Install the package locally so Python can import `geoapify_places` from anywhere:
+
+   ```bash
+   pip install -e .
+   ```
+
+3. Copy `.env.example` to `.env` and keep the API key inside it (or export `GEOAPIFY_API_KEY` via your shell). The provided key (`2acd4f2ea32f499384767f4067b85d14`) will work for basic experiments.
+
+4. Run the example query to see the connector in action:
+
+   ```bash
+   python examples/query_places.py
+   ```
+
+5. Import the client in your own modules:
+
+   ```python
+   from geoapify_places import GeoapifyPlacesClient
+
+   client = GeoapifyPlacesClient()
+   businesses = client.search_businesses(
+       latitude=40.7440,
+       longitude=-73.9903,
+       radius_m=1000,
+       categories=["commercial", "service"],
+       limit=10,
+   )
+   for business in businesses:
+       print(business.name, business.formatted_address)
+   ```
+
+Testing
+-------
+
+Run the existing test suite with:
+
+```bash
+pytest
+```
+
+Next steps
+----------
+
+- Expand the client with richer query helpers (text searches, pagination, etc.).
+- Add caching or rate-limit guards for production usage.
+- Persist normalized business data into the target storage or downstream pipeline.
